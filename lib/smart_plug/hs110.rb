@@ -3,7 +3,6 @@ require 'json'
 
 module SmartPlug
   class HS110
-
     def initialize(ip_address, port)
       @ip_address = ip_address
       @port       = port
@@ -11,11 +10,11 @@ module SmartPlug
     end
 
     def on
-      @util.send(@ip_address, encrypt(SmartPlug::SystemCommands::Turn_on))
+      @util.send(@ip_address, @port, encrypt(SmartPlug::SystemCommands::Turn_on))
     end
 
     def off
-      @util.send(@ip_address, encrypt(SmartPlug::SystemCommands::Turn_off))
+      @util.send(@ip_address, @port, encrypt(SmartPlug::SystemCommands::Turn_off))
     end
 
     def system_info
@@ -24,15 +23,15 @@ module SmartPlug
     end
 
     def night_mode
-      @util.send(@ip_address, encrypt(SmartPlug::SystemCommands::Turn_off_led))
+      @util.send(@ip_address, @port, encrypt(SmartPlug::SystemCommands::Turn_off_led))
     end
 
     def disable_night_mode
-      @util.send(@ip_address, encrypt(SmartPlug::SystemCommands::Turn_on_led))
+      @util.send(@ip_address, @port, encrypt(SmartPlug::SystemCommands::Turn_on_led))
     end
 
     def device_icon
-      @util.send(@ip_address, encrypt(SmartPlug::SystemCommands::Device_icon))
+      @util.send(@ip_address, @port, encrypt(SmartPlug::SystemCommands::Device_icon))
     end
 
     def parse_response
@@ -43,7 +42,7 @@ module SmartPlug
     def encrypt(payload)
       output = []
       key = 0xAB
-      payload.bytes do |b|
+      payload.to_json.bytes do |b|
         output << (b ^ key)
         key = (b ^ key)
       end
